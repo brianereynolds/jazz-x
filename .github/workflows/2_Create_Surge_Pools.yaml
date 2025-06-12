@@ -1,4 +1,4 @@
-name: Create Surge Pools
+name: 2. Create Surge Pools
 
 on:
   workflow_dispatch:

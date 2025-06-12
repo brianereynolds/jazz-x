@@ -1,4 +1,4 @@
-name: Upgrade Agentpool Pool
+name: 1. Upgrade Agentpool Pool
 
 on:
   workflow_dispatch:
