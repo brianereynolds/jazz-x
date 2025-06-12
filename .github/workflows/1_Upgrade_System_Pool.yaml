@@ -49,8 +49,7 @@ jobs:
             resourceGroup: $RESOURCE_GROUP
             clusterName: $CLUSTER_NAME
             nodePools:
-              - name: "system"
-                action: "upgrade"
+              - name: system
                 properties: {
                   orchestratorVersion: $K8S_VERSION,
                 }
