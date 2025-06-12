@@ -1,4 +1,4 @@
-name: Upgrade Agentpool Pool
+name: Create Surge Pools
 
 on:
   workflow_dispatch:
@@ -14,6 +14,13 @@ on:
       version:
         description: "Target Kubernetes version"
         required: false
+      colour:
+        description: "Colour of surge pools to create"
+        required: true
+        type: choice
+        options:
+          - blue
+          - green
 
 jobs:
   do_upgrade:
@@ -35,6 +42,7 @@ jobs:
           RESOURCE_GROUP=${{ vars.RESOURCE_GROUP }}
           CLUSTER_NAME=${{ vars.CLUSTER_NAME }}
           K8S_VERSION=${{ inputs.version }}
+          COLOUR=${{ inputs.colour }}
           
           cat <<EOF | kubectl apply -n operations -f -
           apiVersion: k8smanagers.greyridge.com/v1
@@ -43,26 +51,38 @@ jobs:
             labels:
               app.kubernetes.io/name: nodepoolmanager
               app.kubernetes.io/managed-by: kustomize
-            name: agentpool-upgrade
+            name: surge-pools
           spec:
             subscriptionId: $SUB_ID
             resourceGroup: $RESOURCE_GROUP
             clusterName: $CLUSTER_NAME
             nodePools:
-              - name: agentpool
+              - name: cntrl$COLOUR
                 properties: {
+                  vmSize: Standard_DS2_v2,
+                  minCount: 0,
+                  maxCount: 1,
+                  enableAutoScaling: true,
+                  orchestratorVersion: $K8S_VERSION,
+                }
+              - name: svcs$COLOUR
+                properties: {
+                  vmSize: Standard_DS2_v2,
+                  minCount: 0,
+                  maxCount: 3,
+                  enableAutoScaling: true,
                   orchestratorVersion: $K8S_VERSION,
                 }
           EOF
 
       - name: Execute Start
         if: ${{ inputs.task == 'execute' }}
-        run: echo "::notice::Update started, monitor node pool manager logs and/or Azure Portal"
+        run: echo "::notice::Creation of surge pools started, monitor node pool manager logs and/or Azure Portal"
 
       - name: Cleanup
         if: ${{ inputs.task == 'cleanup' }}
         run: |
-          kubectl -n operations delete nodepoolmanager.k8smanagers.greyridge.com/agentpool-upgrade
+          kubectl -n operations delete nodepoolmanager.k8smanagers.greyridge.com/surge-pools
 
       - name: Cleanup Complete
         if: ${{ inputs.task == 'cleanup' }}
