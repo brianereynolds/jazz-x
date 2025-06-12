@@ -54,7 +54,7 @@ jobs:
                 properties: {
                   orchestratorVersion: $K8S_VERSION,
                 }
-            EOF
+          EOF
 
       - name: Cleanup
         if: ${{ inputs.task == 'cleanup' }}
