@@ -75,7 +75,7 @@ jobs:
           for deployment in "${DEPLOYMENTS[@]}"; do
             echo "⏳ Waiting for deployment: $deployment"
           
-            while [[ $(kubectl get deployment "$deployment-deployment" n jazz-x -o json | jq '.status.readyReplicas') -ne $(kubectl get deployment "$deployment-deployment" -n jazz-x -o json | jq '.status.replicas') ]]; do
+            while [[ $(kubectl get deployment "$deployment-deployment" -n jazz-x -o json | jq '.status.readyReplicas') -ne $(kubectl get deployment "$deployment-deployment" -n jazz-x -o json | jq '.status.replicas') ]]; do
             if [[ $elapsed -ge $timeout ]]; then
               echo "❌ Timeout reached! $deployment did not become ready."
               exit 1
