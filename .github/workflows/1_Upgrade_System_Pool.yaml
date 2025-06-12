@@ -1,7 +1,16 @@
 name: Upgrade System Pool
 
 on:
-  workflow_dispatch: # ✅ Correct usage at workflow level
+  workflow_dispatch:
+    inputs:
+      task:
+        description: "Execute or Cleanup"
+        required: true
+        default: "execute"
+        type: choice
+        options:
+          - execute
+          - cleanup
 
 jobs:
   do_upgrade:
@@ -16,13 +25,12 @@ jobs:
           echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
           export KUBECONFIG=$HOME/.kube/config
 
-      - name: Test Kubectl
+      - name: Execute
+        if: ${{ inputs.task == 'execute' }}
         run: |
           kubectl get pods -o wide -n jazz-x
 
-  verification:
-    needs: do_upgrade
-    runs-on: ubuntu-latest
-    steps:
-      - name: User Confirmation Required
-        run: echo "User triggered this manually!"
+      - name: Cleanup
+        if: ${{ inputs.task == 'cleanup' }}
+        run: |
+          kubectl get services -o wide -n jazz-x
