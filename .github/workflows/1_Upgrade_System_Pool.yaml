@@ -19,7 +19,7 @@ jobs:
 
       - name: Test Kubectl
         run: |
-          kubectl get pods -o wide
+          kubectl get pods -o wide -n jazz-x
 
   verification:
     needs: do_upgrade
