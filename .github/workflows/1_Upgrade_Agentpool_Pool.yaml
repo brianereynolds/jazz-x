@@ -1,4 +1,4 @@
-name: Upgrade System Pool
+name: Upgrade Agentpool Pool
 
 on:
   workflow_dispatch:
@@ -43,13 +43,13 @@ jobs:
             labels:
               app.kubernetes.io/name: nodepoolmanager
               app.kubernetes.io/managed-by: kustomize
-            name: system-pool
+            name: agentpool-upgrade
           spec:
             subscriptionId: $SUB_ID
             resourceGroup: $RESOURCE_GROUP
             clusterName: $CLUSTER_NAME
             nodePools:
-              - name: system
+              - name: agentpool
                 properties: {
                   orchestratorVersion: $K8S_VERSION,
                 }
@@ -58,4 +58,4 @@ jobs:
       - name: Cleanup
         if: ${{ inputs.task == 'cleanup' }}
         run: |
-          kubectl -n operations delete nodepoolmanager.k8smanagers.greyridge.com/system-pool
+          kubectl -n operations delete nodepoolmanager.k8smanagers.greyridge.com/agentpool-upgrade
