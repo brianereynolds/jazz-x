@@ -49,13 +49,13 @@ jobs:
                 type: deployment
                 namespace: jazz-x
                 workloads: [configservice-deployment]
-                selector: {key: agentpool, initial: irrelevant, target: cntrl$COLOUR}
+                selector: {key: agentpool, initial: irrelevant, target: svcs$COLOUR}
                 timeout: 300
           EOF
 
       - name: Wait for ready
         run: |
-          kubectl wait --for=condition=available --timeout=300s -n jazz-x configservice-deployment
+          kubectl wait --for=condition=available --timeout=300s -n jazz-x deployment/configservice-deployment
 
       - name: Cleanup
         run: |
