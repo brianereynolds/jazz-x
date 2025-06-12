@@ -67,7 +67,7 @@ jobs:
 
       - name: Wait for ready
         run: |
-          sleep 30 # Wait for workloadmanager to kick in
+          sleep 10 # Wait for workloadmanager to kick in
           
           DEPLOYMENTS=("cockpit" "equipment" "help" "importexport" "jazz-x-monitoring" "nose" "str" "uia" "wei" "weimon" "wms")
           
