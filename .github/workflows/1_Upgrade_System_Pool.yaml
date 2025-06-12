@@ -1,7 +1,7 @@
 name: Upgrade System Pool
 
 on:
-  workflow_dispatch: # Only runs when manually triggered
+  workflow_dispatch: # ✅ Correct usage at workflow level
 
 jobs:
   do_upgrade:
@@ -14,6 +14,7 @@ jobs:
         run: |
           echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
           export KUBECONFIG=kubeconfig.yaml
+
       - name: Test Kubectl
         run: |
           kubectl get pods -o wide
@@ -21,7 +22,6 @@ jobs:
   verification:
     needs: do_upgrade
     runs-on: ubuntu-latest
-    on: workflow_dispatch
     steps:
       - name: User Confirmation Required
         run: echo "User triggered this manually!"
