@@ -1,0 +1,27 @@
+name: Upgrade System Pool
+
+on:
+  workflow_dispatch: # Only runs when manually triggered
+
+jobs:
+  do_upgrade:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Kubernetes CLI
+        uses: azure/setup-kubectl@v3
+
+      - name: Configure Kubeconfig
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
+          export KUBECONFIG=kubeconfig.yaml
+      - name: Test Kubectl
+        run: |
+          kubectl get pods -o wide
+
+  verification:
+    needs: do_upgrade
+    runs-on: ubuntu-latest
+    on: workflow_dispatch
+    steps:
+      - name: User Confirmation Required
+        run: echo "User triggered this manually!"
