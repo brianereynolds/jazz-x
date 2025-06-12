@@ -1,4 +1,4 @@
-name: 3. Move Config Service
+name: 4. Move Other Services
 
 on:
   workflow_dispatch:
@@ -48,16 +48,45 @@ jobs:
               - description: Move Configuration Service
                 type: deployment
                 namespace: jazz-x
-                workloads: [configservice-deployment]
+                workloads: 
+                  - cockpit-deployment
+                  - equipment-deployment
+                  - help-deployment
+                  - importexport-deployment
+                  - jazz-x-monitoring-deployment
+                  - nose-deployment
+                  - str-deployment
+                  - uia-deployment
+                  - wei-deployment
+                  - weimon-deployment
+                  - wms-deployment
+          
                 selector: {key: agentpool, initial: irrelevant, target: svcs$COLOUR}
                 timeout: 300
           EOF
 
       - name: Wait for ready
         run: |
-          while [[ $(kubectl get deployment configservice-deployment -n jazz-x -o json | jq '.status.readyReplicas') -ne $(kubectl get deployment configservice-deployment -n jazz-x -o json | jq '.status.replicas') ]]; do
-             echo "Waiting for pods..."
-             sleep 10
+          DEPLOYMENTS=("cockpit" "equipment" "help" "importexport" "jazz-x-monitoring" "nose" "str" "uia" "wei" "weimon" "wms")
+          
+          timeout=300  # Maximum wait time in seconds
+          elapsed=0
+          
+          for deployment in "${DEPLOYMENTS[@]}"; do
+            echo "⏳ Waiting for deployment: $deployment"
+          
+            while [[ $(kubectl get deployment "$deployment-deployment" n jazz-x -o json | jq '.status.readyReplicas') -ne $(kubectl get deployment "$deployment-deployment" -n jazz-x -o json | jq '.status.replicas') ]]; do
+            if [[ $elapsed -ge $timeout ]]; then
+              echo "❌ Timeout reached! $deployment did not become ready."
+              exit 1
+            fi
+            
+            echo "🔄 Deployment: $deployment - Waiting for pods... ($elapsed/$timeout seconds elapsed)"
+            sleep 5
+            elapsed=$((elapsed + 10))
+            done
+          
+            echo "✅ Deployment: $deployment - All pods are ready!"
           done
 
       - name: Cleanup
