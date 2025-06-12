@@ -31,9 +31,32 @@ jobs:
       - name: Execute
         if: ${{ inputs.task == 'execute' }}
         run: |
-          kubectl get pods -o wide -n jazz-x
+          SUB_ID=${{ vars.SUB_ID }}
+          RESOURCE_ID=${{ vars.RESOURCE_ID }}
+          CLUSTER_NAME=${{ vars.CLUSTER_NAME }}
+          K8S_VERSION=${{ inputs.version }}
+          
+          cat <<EOF | kubectl apply -n operations -f -
+          apiVersion: k8smanagers.greyridge.com/v1
+          kind: NodePoolManager
+          metadata:
+            labels:
+              app.kubernetes.io/name: nodepoolmanager
+              app.kubernetes.io/managed-by: kustomize
+            name: system-pool
+          spec:
+            subscriptionId: $SUB_ID
+            resourceGroup: $RESOURCE_GROUP
+            clusterName: $CLUSTER_NAME
+            nodePools:
+              - name: "system"
+                action: "upgrade"
+                properties: {
+                  orchestratorVersion: $K8S_VERSION,
+                }
+            EOF
 
       - name: Cleanup
         if: ${{ inputs.task == 'cleanup' }}
         run: |
-          kubectl get services -o wide -n jazz-x
+          kubectl -n operations delete nodepoolmanager.k8smanagers.greyridge.com/system-pool
