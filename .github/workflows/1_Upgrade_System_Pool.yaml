@@ -32,7 +32,7 @@ jobs:
         if: ${{ inputs.task == 'execute' }}
         run: |
           SUB_ID=${{ vars.SUB_ID }}
-          RESOURCE_ID=${{ vars.RESOURCE_ID }}
+          RESOURCE_GROUP=${{ vars.RESOURCE_GROUP }}
           CLUSTER_NAME=${{ vars.CLUSTER_NAME }}
           K8S_VERSION=${{ inputs.version }}
           
