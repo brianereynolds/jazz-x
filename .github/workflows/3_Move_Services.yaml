@@ -1,0 +1,76 @@
+name: 3. Move Services
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: "Execute or Cleanup"
+        required: true
+        default: "execute"
+        type: choice
+        options:
+          - execute
+          - cleanup
+      colour:
+        description: "Colour to move services TO"
+        required: true
+        type: choice
+        options:
+          - blue
+          - green
+
+jobs:
+  do_upgrade:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Kubernetes CLI
+        uses: azure/setup-kubectl@v3
+
+      - name: Configure Kubeconfig
+        run: |
+          mkdir -p $HOME/.kube/
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          export KUBECONFIG=$HOME/.kube/config
+
+      - name: Move Configuration Service
+        if: ${{ inputs.task == 'execute' }}
+        run: |
+          SUB_ID=${{ vars.SUB_ID }}
+          RESOURCE_GROUP=${{ vars.RESOURCE_GROUP }}
+          CLUSTER_NAME=${{ vars.CLUSTER_NAME }}
+          K8S_VERSION=${{ inputs.version }}
+          COLOUR=${{ inputs.colour }}
+        
+          cat <<EOF | kubectl apply -n operations -f -
+          apiVersion: k8smanagers.greyridge.com/v1
+          kind: WorkloadManager
+          metadata:
+            labels:
+              app.kubernetes.io/name: workloadmanager
+              app.kubernetes.io/managed-by: kustomize
+            name: move-config-service
+          spec:
+            subscriptionId: $SUB_ID
+            resourceGroup: $RESOURCE_GROUP
+            clusterName: $CLUSTER_NAME
+            procedures:
+              - description: Move Configuration Service
+                type: deployment
+                namespace: jazz-x
+                workloads: [configservice-deployment]
+                selector: {key: agentpool, initial: irrelevant, target: cntrl$COLOUR}
+                timeout: 300
+          EOF
+
+      - name: Execute Start
+        if: ${{ inputs.task == 'execute' }}
+        run: echo "::notice::Creation of surge pools started, monitor node pool manager logs and/or Azure Portal"
+
+      - name: Cleanup
+        if: ${{ inputs.task == 'cleanup' }}
+        run: |
+          kubectl -n operations delete workloadmanager.k8smanagers.greyridge.com/move-config-service
+
+      - name: Cleanup Complete
+        if: ${{ inputs.task == 'cleanup' }}
+        run: echo "::notice::Cleanup completed successfully!"
