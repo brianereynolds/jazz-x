@@ -39,7 +39,7 @@ jobs:
             labels:
               app.kubernetes.io/name: workloadmanager
               app.kubernetes.io/managed-by: kustomize
-            name: move-config-service
+            name: move-other-services
           spec:
             subscriptionId: $SUB_ID
             resourceGroup: $RESOURCE_GROUP
@@ -93,4 +93,4 @@ jobs:
 
       - name: Cleanup
         run: |
-          kubectl -n operations delete workloadmanager.k8smanagers.greyridge.com/move-config-service
+          kubectl -n operations delete workloadmanager.k8smanagers.greyridge.com/move-other-services
