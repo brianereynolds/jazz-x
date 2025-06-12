@@ -1,0 +1,6 @@
+apiVersion: v2
+name: jazz-x
+description: A Helm chart for jazz-x microservices
+version: 1.0.0
+appVersion: 1.0.0
+

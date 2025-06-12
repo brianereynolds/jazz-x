@@ -1,0 +1,39 @@
+{{- range .Values.microservices }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .name }}-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .name }}
+    spec:
+      nodeSelector:
+        agentpool: {{ .agentpool | default "svcsblue" }}
+      containers:
+        - name: {{ .name }}-container
+          image: busybox
+          args:
+            - sleep
+            - "3600"
+        - name: metrics-sidecar
+          image: prom/statsd-exporter
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .name }}-service
+spec:
+  selector:
+    app: {{ .name }}
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+{{- end }}

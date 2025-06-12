@@ -1,0 +1,15 @@
+microservices:
+  - name: cockpit
+  - name: configservice
+  - name: equipment
+  - name: help
+  - name: importexport
+  - name: nose
+  - name: jazz-x-monitoring
+  - name: str
+  - name: uia
+  - name: wei
+  - name: weimon
+  - name: wms
+  - name: central
+    agentpool: cntrlblue
