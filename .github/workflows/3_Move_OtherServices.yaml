@@ -82,7 +82,7 @@ jobs:
             fi
             
             echo "🔄 Deployment: $deployment - Waiting for pods... ($elapsed/$timeout seconds elapsed)"
-            sleep 5
+            sleep 10
             elapsed=$((elapsed + 10))
             done
           
