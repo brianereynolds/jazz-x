@@ -11,6 +11,9 @@ on:
         options:
           - execute
           - cleanup
+      version:
+        description: "Target Kubernetes version"
+        required: true
 
 jobs:
   do_upgrade:
