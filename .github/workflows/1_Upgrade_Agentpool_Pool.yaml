@@ -12,8 +12,8 @@ on:
           - execute
           - cleanup
       version:
-        description: "Target Kubernetes version"
-        required: true
+        description: "Target Kubernetes version (mandatory for execute)"
+        required: false
 
 jobs:
   do_upgrade:
@@ -55,7 +55,15 @@ jobs:
                 }
           EOF
 
+      - name: Execute Start
+        if: ${{ inputs.task == 'execute' }}
+        run: echo "::notice::Update started, monitor node pool manager logs and/or Azure Portal"
+
       - name: Cleanup
         if: ${{ inputs.task == 'cleanup' }}
         run: |
           kubectl -n operations delete nodepoolmanager.k8smanagers.greyridge.com/agentpool-upgrade
+
+      - name: Cleanup Complete
+        if: ${{ inputs.task == 'cleanup' }}
+        run: echo "::notice::Cleanup completed successfully!"
