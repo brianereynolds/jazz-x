@@ -62,7 +62,7 @@ jobs:
                   - wms-deployment
           
                 selector: {key: agentpool, initial: irrelevant, target: svcs$COLOUR}
-                timeout: 300
+                timeout: 1
           EOF
 
       - name: Wait for ready
