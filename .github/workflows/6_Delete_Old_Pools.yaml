@@ -54,7 +54,7 @@ jobs:
       - name: Wait for pools to be deleted
         run: |
           COLOUR=${{ inputs.colour }}
-          POOLS=("svcs" "cntrl")
+          POOLS=("cntrl" "svcs")
           
           for POOL in "${POOLS[@]}"; do
             NODEPOOL_NAME=$POOL$COLOUR

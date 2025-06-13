@@ -3,14 +3,6 @@ name: 2. Create Surge Pools
 on:
   workflow_dispatch:
     inputs:
-      task:
-        description: "Execute or Cleanup"
-        required: true
-        default: "execute"
-        type: choice
-        options:
-          - execute
-          - cleanup
       version:
         description: "Target Kubernetes version"
         required: false
@@ -36,7 +28,6 @@ jobs:
           export KUBECONFIG=$HOME/.kube/config
 
       - name: Execute
-        if: ${{ inputs.task == 'execute' }}
         run: |
           SUB_ID=${{ vars.SUB_ID }}
           RESOURCE_GROUP=${{ vars.RESOURCE_GROUP }}
@@ -75,15 +66,21 @@ jobs:
                 }
           EOF
 
-      - name: Execute Start
-        if: ${{ inputs.task == 'execute' }}
-        run: echo "::notice::Creation of surge pools started, monitor node pool manager logs and/or Azure Portal"
+      - name: Wait for pools to be created
+        run: |
+          COLOUR=${{ inputs.colour }}
+          POOLS=("cntrl" "svcs")
+          
+          for POOL in "${POOLS[@]}"; do
+            NODEPOOL_NAME=$POOL$COLOUR
+            while kubectl get nodes -o json | jq -r ".items[] | select(.metadata.labels[\"agentpool\"]==\"$NODEPOOL_NAME\") | .metadata.name" | grep -v "True"; do
+              echo "Waiting for node pool '$NODEPOOL_NAME' to be created..."
+              sleep 30
+            done
+            echo "Node pool '$NODEPOOL_NAME' has been created with version ${{ inputs.version }} !"
+          done
 
       - name: Cleanup
-        if: ${{ inputs.task == 'cleanup' }}
         run: |
           kubectl -n operations delete nodepoolmanager.k8smanagers.greyridge.com/surge-pools
 
-      - name: Cleanup Complete
-        if: ${{ inputs.task == 'cleanup' }}
-        run: echo "::notice::Cleanup completed successfully!"
