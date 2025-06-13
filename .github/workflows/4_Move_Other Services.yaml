@@ -27,7 +27,7 @@ jobs:
           echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
           export KUBECONFIG=$HOME/.kube/config
 
-      - name: Move Configuration Service
+      - name: Move Services
         run: |
           SUB_ID=${{ vars.SUB_ID }}
           RESOURCE_GROUP=${{ vars.RESOURCE_GROUP }}
@@ -77,7 +77,7 @@ jobs:
           sleep 10 # Wait for workloadmanager to kick in
           
           DEPLOYMENTS=("cockpit" "equipment" "help" "importexport" "jazz-x-monitoring" "nose" "str" "uia" "wei" "weimon" "wms")
-          NODEPOOL_NAME=svcs$COLOUR
+          NODEPOOL_NAME=svcs${{ inputs.colour }}
           
           timeout=300  # Maximum wait time in seconds
           elapsed=0
