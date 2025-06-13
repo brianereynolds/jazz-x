@@ -1,7 +1,7 @@
 name: 2. Create Surge Pools
 
 concurrency:
-  group: create-surge-pools-group
+  group: np-maintenance-group
 
 on:
   workflow_dispatch:
