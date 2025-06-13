@@ -55,7 +55,7 @@ jobs:
                 selector: {
                   key: agentpool, 
                   initial: irrelevant, 
-                  target: svcs$COLOUR
+                  target: cntrl$COLOUR
                 }
                 timeout: 300
           EOF
