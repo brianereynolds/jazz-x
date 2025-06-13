@@ -73,11 +73,11 @@ jobs:
           
           for POOL in "${POOLS[@]}"; do
             NODEPOOL_NAME=$POOL$COLOUR
-            while kubectl get nodes -o json | jq -r ".items[] | select(.metadata.labels[\"agentpool\"]==\"$NODEPOOL_NAME\") | .metadata.name" | grep -v "True"; do
-              echo "Waiting for node pool '$NODEPOOL_NAME' to be created..."
+            while kubectl get nodes -o json | jq -r ".items[] | select(.metadata.labels[\"agentpool\"]==\"$NODEPOOL_NAME\") | .status.conditions[] | select(.type==\"Ready\").status" | grep -v "True"; do
+              echo "Waiting for node pool '$NODEPOOL_NAME' to be ready..."
               sleep 30
-            done
-            echo "Node pool '$NODEPOOL_NAME' has been created with version ${{ inputs.version }} !"
+            done  
+            echo "Node pool $NODEPOOL_NAME has been created with version ${{ inputs.version }} !"
           done
 
       - name: Cleanup
