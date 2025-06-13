@@ -1,7 +1,13 @@
 name: 0. Install K8S Managers
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Ignore Errors"
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   do_install:
@@ -16,9 +22,18 @@ jobs:
           echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
           export KUBECONFIG=$HOME/.kube/config
 
-      - name: Execute
+      - name: Execute Force
+        if: inputs.force == true
         run: |
           kubectl create ns operations || true
           helm repo add k8smanagers https://k8smanagers.blob.core.windows.net/helm/ || true
           helm install nodepoolmanager k8smanagers/nodepoolmanager -n operations || true
           helm install workloadmanager k8smanagers/workloadmanager -n operations || true
+
+      - name: Execute
+        if: inputs.force == false
+        run: |
+          kubectl create ns operations
+          helm repo add k8smanagers https://k8smanagers.blob.core.windows.net/helm/
+          helm install nodepoolmanager k8smanagers/nodepoolmanager -n operations
+          helm install workloadmanager k8smanagers/workloadmanager -n operations
