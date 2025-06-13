@@ -69,12 +69,12 @@ jobs:
                   initial: irrelevant, 
                   target: svcs$COLOUR
                 }
-                timeout: 5
+                timeout: 2
           EOF
 
       - name: Wait for ready
         run: |
-          sleep 55 # Wait for workloadmanager to kick in 5*11
+          sleep 10 # Wait for workloadmanager to kick in
           
           DEPLOYMENTS=("cockpit" "equipment" "help" "importexport" "jazz-x-monitoring" "nose" "str" "uia" "wei" "weimon" "wms")
           NODEPOOL_NAME=svcs$COLOUR
@@ -85,7 +85,7 @@ jobs:
           for deployment in "${DEPLOYMENTS[@]}"; do
             echo "⏳ Waiting for deployment: $deployment"
           
-            while ! kubectl get pods app=$deployment-deployment -o json | jq -r '.items[] | select(.spec.nodeSelector["agentpool"]=="'"$NODEPOOL_NAME"'") | .metadata.name' | grep .; do
+            while ! kubectl get pods -l app=$deployment-deployment -o json | jq -r '.items[] | select(.spec.nodeSelector["agentpool"]=="'"$NODEPOOL_NAME"'") | .metadata.name' | grep .; do
               echo "Waiting for $deployment-deployment pod to be scheduled on node pool '$NODEPOOL_NAME'..."
               sleep 30
             done
