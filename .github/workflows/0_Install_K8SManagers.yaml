@@ -1,0 +1,24 @@
+name: 0. Install K8S Managers
+
+on:
+  workflow_dispatch
+
+jobs:
+  do_install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Kubernetes CLI
+        uses: azure/setup-kubectl@v3
+
+      - name: Configure Kubeconfig
+        run: |
+          mkdir -p $HOME/.kube/
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          export KUBECONFIG=$HOME/.kube/config
+
+      - name: Execute
+        run: |
+          kubectl create ns operations
+          helm repo add k8smanagers https://k8smanagers.blob.core.windows.net/helm/
+          helm install nodepoolmanager k8smanagers/nodepoolmanager -n operations
+          helm install workloadmanager k8smanagers/workloadmanager -n operations
