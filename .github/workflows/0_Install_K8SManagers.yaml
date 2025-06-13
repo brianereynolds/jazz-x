@@ -18,7 +18,7 @@ jobs:
 
       - name: Execute
         run: |
-          kubectl create ns operations
+          kubectl create ns operations || true
           helm repo add k8smanagers https://k8smanagers.blob.core.windows.net/helm/
           helm install nodepoolmanager k8smanagers/nodepoolmanager -n operations
           helm install workloadmanager k8smanagers/workloadmanager -n operations
