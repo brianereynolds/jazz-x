@@ -85,7 +85,7 @@ jobs:
           
             while ! kubectl get pods -l app=$deployment -n jazz-x -o json | jq -r '.items[] | select(.spec.nodeSelector["agentpool"]=="'"$NODEPOOL_NAME"'") | .metadata.name' | grep .; do
               echo "Waiting for $deployment-deployment pod to be scheduled on node pool '$NODEPOOL_NAME'..."
-              sleep 30
+              sleep 2
             done
   
             while [[ $(kubectl get deployment "$deployment-deployment" -n jazz-x -o json | jq '.status.readyReplicas') -ne $(kubectl get deployment "$deployment-deployment" -n jazz-x -o json | jq '.status.replicas') ]]; do
