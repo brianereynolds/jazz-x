@@ -1,0 +1,70 @@
+name: 3. Delete Old Pools
+
+on:
+  workflow_dispatch:
+    inputs:
+      colour:
+        description: "Colour of old pools to delete"
+        required: true
+        type: choice
+        options:
+          - blue
+          - green
+
+jobs:
+  do_upgrade:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Kubernetes CLI
+        uses: azure/setup-kubectl@v3
+
+      - name: Configure Kubeconfig
+        run: |
+          mkdir -p $HOME/.kube/
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          export KUBECONFIG=$HOME/.kube/config
+
+      - name: Execute
+        run: |
+          SUB_ID=${{ vars.SUB_ID }}
+          RESOURCE_GROUP=${{ vars.RESOURCE_GROUP }}
+          CLUSTER_NAME=${{ vars.CLUSTER_NAME }}
+          K8S_VERSION=${{ inputs.version }}
+          COLOUR=${{ inputs.colour }}
+          
+          cat <<EOF | kubectl apply -n operations -f -
+          apiVersion: k8smanagers.greyridge.com/v1
+          kind: NodePoolManager
+          metadata:
+            labels:
+              app.kubernetes.io/name: nodepoolmanager
+              app.kubernetes.io/managed-by: kustomize
+            name: delete-old-pools
+          spec:
+            subscriptionId: $SUB_ID
+            resourceGroup: $RESOURCE_GROUP
+            clusterName: $CLUSTER_NAME
+            nodePools:
+              - name: cntrl$COLOUR
+                action: delete
+              - name: svcs$COLOUR
+                action: delete
+          EOF
+
+      - name: Wait for pools to be deleted
+        run: |
+          COLOUR=${{ inputs.colour }}
+          POOLS=("svcs" "cntrl")
+          
+          for POOL in "${POOLS[@]}"; do
+            NODEPOOL_NAME=$POOL$COLOUR
+            while kubectl get nodes -o json | jq -r ".items[] | select(.metadata.labels[\"agentpool\"]==\"$NODEPOOL_NAME\") | .metadata.name" | grep .; do
+              echo "Waiting for node pool '$NODEPOOL_NAME' to be deleted..."
+              sleep 30
+            done
+            echo "Node pool '$NODEPOOL_NAME' has been deleted!"
+          done
+
+      - name: Cleanup
+        run: |
+          kubectl -n operations delete nodepoolmanager.k8smanagers.greyridge.com/delete-old-pools
