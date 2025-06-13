@@ -69,12 +69,12 @@ jobs:
                   initial: irrelevant, 
                   target: svcs$COLOUR
                 }
-                timeout: 15
+                timeout: 5
           EOF
 
       - name: Wait for ready
         run: |
-          sleep 10 # Wait for workloadmanager to kick in
+          sleep 55 # Wait for workloadmanager to kick in 5*11
           
           DEPLOYMENTS=("cockpit" "equipment" "help" "importexport" "jazz-x-monitoring" "nose" "str" "uia" "wei" "weimon" "wms")
           
