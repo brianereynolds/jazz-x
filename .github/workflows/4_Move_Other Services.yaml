@@ -85,7 +85,7 @@ jobs:
           for deployment in "${DEPLOYMENTS[@]}"; do
             echo "⏳ Waiting for deployment: $deployment"
           
-            while ! kubectl get pods -l app=$deployment-deployment -o json | jq -r '.items[] | select(.spec.nodeSelector["agentpool"]=="'"$NODEPOOL_NAME"'") | .metadata.name' | grep .; do
+            while ! kubectl get pods -l app=$deployment -o json | jq -r '.items[] | select(.spec.nodeSelector["agentpool"]=="'"$NODEPOOL_NAME"'") | .metadata.name' | grep .; do
               echo "Waiting for $deployment-deployment pod to be scheduled on node pool '$NODEPOOL_NAME'..."
               sleep 30
             done
