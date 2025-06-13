@@ -81,22 +81,15 @@ jobs:
           elapsed=0
           
           for deployment in "${DEPLOYMENTS[@]}"; do
-            echo "⏳ Waiting for deployment: $deployment"
           
             while ! kubectl get pods -l app=$deployment -n jazz-x -o json | jq -r '.items[] | select(.spec.nodeSelector["agentpool"]=="'"$NODEPOOL_NAME"'") | .metadata.name' | grep .; do
-              echo "Waiting for $deployment-deployment pod to be scheduled on node pool '$NODEPOOL_NAME'..."
+              echo "🔄 Waiting for $deployment-deployment pod to be scheduled on node pool '$NODEPOOL_NAME'..."
               sleep 2
             done
   
             while [[ $(kubectl get deployment "$deployment-deployment" -n jazz-x -o json | jq '.status.readyReplicas') -ne $(kubectl get deployment "$deployment-deployment" -n jazz-x -o json | jq '.status.replicas') ]]; do
-              if [[ $elapsed -ge $timeout ]]; then
-                echo "❌ Timeout reached! $deployment did not become ready."
-                exit 1
-              fi
-              
-              echo "🔄 Deployment: $deployment - Waiting for pods... ($elapsed/$timeout seconds elapsed)"
-              sleep 5
-              elapsed=$((elapsed + 5))
+              echo "🔄 Deployment: $deployment - Waiting for pods... "
+              sleep 2
             done
           
             echo "✅ Deployment: $deployment - All pods are ready!"
