@@ -1,5 +1,8 @@
 name: 2. Create Surge Pools
 
+concurrency:
+  group: create-surge-pools-group
+
 on:
   workflow_dispatch:
     inputs:
@@ -73,10 +76,17 @@ jobs:
           
           for POOL in "${POOLS[@]}"; do
             NODEPOOL_NAME=$POOL$COLOUR
-            while kubectl get nodes -o json | jq -r ".items[] | select(.metadata.labels[\"agentpool\"]==\"$NODEPOOL_NAME\") | .status.conditions[] | select(.type==\"Ready\").status" | grep -v "True"; do
-              echo "Waiting for node pool '$NODEPOOL_NAME' to be ready..."
+          
+            while ! kubectl get nodes | grep "$NODEPOOL_NAME"; do
+              echo "Waiting for node pool '$NODEPOOL_NAME' to be created..."
               sleep 30
-            done  
+            done
+  
+            while kubectl get nodes -o json | jq -r '.items[] | select(.metadata.labels["agentpool"]=="'"$NODEPOOL_NAME"'") | .status.conditions[] | select(.type=="Ready").status' | grep -v "True"; do
+              echo "Waiting for node pool '$NODEPOOL_NAME' to become ready..."
+              sleep 30
+            done
+ 
             echo "Node pool $NODEPOOL_NAME has been created with version ${{ inputs.version }} !"
           done
 

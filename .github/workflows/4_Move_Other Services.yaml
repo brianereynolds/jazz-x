@@ -1,5 +1,8 @@
 name: 4. Move Other Services
 
+concurrency:
+  group: move-other-services-group
+
 on:
   workflow_dispatch:
     inputs:

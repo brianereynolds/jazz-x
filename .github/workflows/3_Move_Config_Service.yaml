@@ -1,5 +1,8 @@
 name: 3. Move Config Service
 
+concurrency:
+  group: move-config-service-group
+
 on:
   workflow_dispatch:
     inputs:

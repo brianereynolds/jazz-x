@@ -1,5 +1,8 @@
 name: 5. Move Central Service
 
+concurrency:
+  group: move-central-service-group
+
 on:
   workflow_dispatch:
     inputs:
