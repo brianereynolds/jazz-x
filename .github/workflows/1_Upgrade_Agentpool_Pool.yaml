@@ -6,14 +6,6 @@ concurrency:
 on:
   workflow_dispatch:
     inputs:
-      task:
-        description: "Execute or Cleanup"
-        required: true
-        default: "execute"
-        type: choice
-        options:
-          - execute
-          - cleanup
       version:
         description: "Target Kubernetes version"
         required: false
@@ -58,15 +50,17 @@ jobs:
                 }
           EOF
 
-      - name: Execute Start
-        if: ${{ inputs.task == 'execute' }}
-        run: echo "::notice::Update started, monitor node pool manager logs and/or Azure Portal"
+      - name: Wait
+        run: |
+          NODEPOOL_NAME=agentpool
+          K8S_VERSION=${{ inputs.version }}
+          
+          while kubectl get nodes -o json | jq -r '.items[] | select(.metadata.labels["agentpool"]=="'"$NODEPOOL_NAME"'") | .status.nodeInfo.kubeletVersion' | grep -v "$K8S_VERSION"; do
+            echo "🔄 Waiting for node pool '$NODEPOOL_NAME' to be at version '$K8S_VERSION'..."
+            sleep 30
+          done
 
       - name: Cleanup
-        if: ${{ inputs.task == 'cleanup' }}
         run: |
           kubectl -n operations delete nodepoolmanager.k8smanagers.greyridge.com/agentpool-upgrade
 
-      - name: Cleanup Complete
-        if: ${{ inputs.task == 'cleanup' }}
-        run: echo "::notice::Cleanup completed successfully!"
