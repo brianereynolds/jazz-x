@@ -69,13 +69,11 @@ jobs:
                   initial: irrelevant, 
                   target: svcs$COLOUR
                 }
-                timeout: 2
+                timeout: 1
           EOF
 
       - name: Wait for ready
-        run: |
-          sleep 10 # Wait for workloadmanager to kick in
-          
+        run: |          
           DEPLOYMENTS=("cockpit" "equipment" "help" "importexport" "jazz-x-monitoring" "nose" "str" "uia" "wei" "weimon" "wms")
           NODEPOOL_NAME=svcs${{ inputs.colour }}
           
