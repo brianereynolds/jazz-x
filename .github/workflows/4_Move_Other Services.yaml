@@ -76,10 +76,7 @@ jobs:
         run: |          
           DEPLOYMENTS=("cockpit" "equipment" "help" "importexport" "jazz-x-monitoring" "nose" "str" "uia" "wei" "weimon" "wms")
           NODEPOOL_NAME=svcs${{ inputs.colour }}
-          
-          timeout=300  # Maximum wait time in seconds
-          elapsed=0
-          
+                    
           for deployment in "${DEPLOYMENTS[@]}"; do
           
             while ! kubectl get pods -l app=$deployment -n jazz-x -o json | jq -r '.items[] | select(.spec.nodeSelector["agentpool"]=="'"$NODEPOOL_NAME"'") | .metadata.name' | grep .; do

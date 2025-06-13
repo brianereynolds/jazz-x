@@ -63,7 +63,7 @@ jobs:
       - name: Wait for ready
         run: |
           while [[ $(kubectl get deployment configservice-deployment -n jazz-x -o json | jq '.status.readyReplicas') -ne $(kubectl get deployment configservice-deployment -n jazz-x -o json | jq '.status.replicas') ]]; do
-             echo "Waiting for pods..."
+             echo "🔄 Waiting for pods..."
              sleep 10
           done
 
