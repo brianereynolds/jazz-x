@@ -45,7 +45,7 @@ jobs:
             resourceGroup: $RESOURCE_GROUP
             clusterName: $CLUSTER_NAME
             procedures:
-              - description: Move Configuration Service
+              - description: Move non-critical Services
                 type: deployment
                 namespace: jazz-x
                 workloads: 
@@ -61,8 +61,12 @@ jobs:
                   - weimon-deployment
                   - wms-deployment
           
-                selector: {key: agentpool, initial: irrelevant, target: svcs$COLOUR}
-                timeout: 1
+                selector: {
+                  key: agentpool, 
+                  initial: irrelevant, 
+                  target: svcs$COLOUR
+                }
+                timeout: 15
           EOF
 
       - name: Wait for ready
@@ -78,14 +82,14 @@ jobs:
             echo "⏳ Waiting for deployment: $deployment"
           
             while [[ $(kubectl get deployment "$deployment-deployment" -n jazz-x -o json | jq '.status.readyReplicas') -ne $(kubectl get deployment "$deployment-deployment" -n jazz-x -o json | jq '.status.replicas') ]]; do
-            if [[ $elapsed -ge $timeout ]]; then
-              echo "❌ Timeout reached! $deployment did not become ready."
-              exit 1
-            fi
-            
-            echo "🔄 Deployment: $deployment - Waiting for pods... ($elapsed/$timeout seconds elapsed)"
-            sleep 10
-            elapsed=$((elapsed + 10))
+              if [[ $elapsed -ge $timeout ]]; then
+                echo "❌ Timeout reached! $deployment did not become ready."
+                exit 1
+              fi
+              
+              echo "🔄 Deployment: $deployment - Waiting for pods... ($elapsed/$timeout seconds elapsed)"
+              sleep 5
+              elapsed=$((elapsed + 5))
             done
           
             echo "✅ Deployment: $deployment - All pods are ready!"

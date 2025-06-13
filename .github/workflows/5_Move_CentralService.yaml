@@ -1,4 +1,4 @@
-name: 3. Move Config Service
+name: 3. Move Central Service
 
 on:
   workflow_dispatch:
@@ -39,16 +39,16 @@ jobs:
             labels:
               app.kubernetes.io/name: workloadmanager
               app.kubernetes.io/managed-by: kustomize
-            name: move-config-service
+            name: move-central-service
           spec:
             subscriptionId: $SUB_ID
             resourceGroup: $RESOURCE_GROUP
             clusterName: $CLUSTER_NAME
             procedures:
-              - description: Move Configuration Service
+              - description: Move Central Service
                 type: deployment
                 namespace: jazz-x
-                workloads: [configservice-deployment]
+                workloads: [central-deployment]
                 selector: {
                   key: agentpool, 
                   initial: irrelevant, 
@@ -66,4 +66,4 @@ jobs:
 
       - name: Cleanup
         run: |
-          kubectl -n operations delete workloadmanager.k8smanagers.greyridge.com/move-config-service
+          kubectl -n operations delete workloadmanager.k8smanagers.greyridge.com/move-central-service
