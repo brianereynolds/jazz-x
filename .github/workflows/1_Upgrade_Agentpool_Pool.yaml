@@ -24,7 +24,6 @@ jobs:
           export KUBECONFIG=$HOME/.kube/config
 
       - name: Execute
-        if: ${{ inputs.task == 'execute' }}
         run: |
           SUB_ID=${{ vars.SUB_ID }}
           RESOURCE_GROUP=${{ vars.RESOURCE_GROUP }}
