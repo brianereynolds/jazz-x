@@ -1,4 +1,4 @@
-name: 3. Delete Old Pools
+name: 6. Delete Old Pools
 
 on:
   workflow_dispatch:
