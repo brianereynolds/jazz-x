@@ -13,6 +13,22 @@ kubectl create ns jazz-x
 helm install -n jazz-x jazz-x .`
 ```
 
+## Procedure
+A set of Github Action pipelines are available [here](.github/workflows)
+
+See the description in each pipeline for relevant details
+
+0. Install K8S [NodePool](https://github.com/brianereynolds/nodePoolManager-helm) and [Workload](https://github.com/brianereynolds/workloadManager-helm) Manager
+1. Upgrade System Pool using NodepoolManager
+2. Create Surge Pools using NodepoolManager
+3. Move Kanin MQ stateful set using WorkloadManager
+4. Move Config deployment using WorkloadManager
+5. Move multiple deployments using WorkloadManager
+6. Move Central deployment using WorkloadManager
+7. Delete unused node pools using NodepoolManager
+
+List available [here](https://github.com/brianereynolds/jazz-x/actions)
+
 ## Appendix
 
 ### Create Nodepools
