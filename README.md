@@ -1,8 +1,7 @@
 # jazz-x
 
 ## Description
-A set of microservices for demonstration purposes that uses nodeSelector to schedule workloads
-
+A set of microservices for demonstration purposes. Using [NodePool](https://github.com/brianereynolds/nodePoolManager-helm) and [Workload](https://github.com/brianereynolds/workloadManager-helm) they can be moved between different node pools
 ## Pre-reqs
 * A running AKS cluster
 * Nodepools named "cntrlblue" and "svcsblue". See appendix for creation instructions
@@ -49,14 +48,14 @@ helm install nodepoolmanager k8smanagers/nodepoolmanager -n operations
 #### Create nodepools 
 The following GitHub Actions [pipeline can be used ](./.github/workflows/2_Create_Surge_Pools.yaml)
 
-Alternatively, to create manually, _set or change_ these values
+Alternatively, to create manually, _set or change_ the "..." values
 ```
 SUB_ID="..."
 RESOURCE_GROUP="..."
 
-CLUSTER_NAME="lm-cluster"
-K8S_VERSION="1.30.5"
-VM_SIZE="Standard_DS2_v2"
+CLUSTER_NAME="..."
+K8S_VERSION="1.30.7"        # Change as required
+VM_SIZE="Standard_DS2_v2"   # Change as required
 
 cat <<EOF | kubectl apply -f -
 apiVersion: k8smanagers.greyridge.com/v1
