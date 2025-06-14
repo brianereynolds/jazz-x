@@ -1,7 +1,7 @@
 # jazz-x
 
 ## Description
-A set of microservices for demonstration purposes. Using [NodePool](https://github.com/brianereynolds/nodePoolManager-helm) and [Workload](https://github.com/brianereynolds/workloadManager-helm) they can be moved between different node pools
+A set of microservices for demonstration purposes. Using [Nodepool](https://github.com/brianereynolds/nodePoolManager-helm) and [Workload](https://github.com/brianereynolds/workloadManager-helm) Managers they can be moved between different node pools
 ## Pre-reqs
 * A running AKS cluster
 * Nodepools named "cntrlblue" and "svcsblue". See appendix for creation instructions
