@@ -54,10 +54,10 @@ jobs:
             resourceGroup: $RESOURCE_GROUP
             clusterName: $CLUSTER_NAME
             procedures:
-              - description: Move Configuration Service
+              - description: Move Kanin MQ Service
                 type: statefulset
                 namespace: jazz-x
-                workloads: [kanin-mq-stateful]
+                workloads: [kanin-mq-statefulset]
                 selector: {
                   key: agentpool, 
                   initial: irrelevant, 
