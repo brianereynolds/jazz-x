@@ -18,7 +18,7 @@ A set of Github Action pipelines are available [here](.github/workflows)
 
 See the description in each pipeline for relevant details
 
-0. Install K8S [NodePool](https://github.com/brianereynolds/nodePoolManager-helm) and [Workload](https://github.com/brianereynolds/workloadManager-helm) Manager
+0. Install [NodePool](https://github.com/brianereynolds/nodePoolManager-helm) and [Workload](https://github.com/brianereynolds/workloadManager-helm) helm charts
 1. Upgrade System Pool using NodepoolManager
 2. Create Surge Pools using NodepoolManager
 3. Move Kanin MQ stateful set using WorkloadManager
