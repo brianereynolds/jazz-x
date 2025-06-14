@@ -1,11 +1,11 @@
 # Description
-#   This pipeline will upgrade only the system nodepool. In this example, the pool has been named "agentpool"
+#   This pipeline will upgrade only the system nodepool. In this example, the pool has been named "system"
 # Parameters:
 #   Target Kubernetes Version    x.x.x    The version of Kubernetes to upgrade this node pool to
-name: 1. Upgrade Agentpool Pool
+name: 1. Upgrade System Pool
 
 concurrency:
-  group: upgrade-agentpool-group
+  group: upgrade-systempool-group
 
 on:
   workflow_dispatch:
@@ -41,13 +41,13 @@ jobs:
             labels:
               app.kubernetes.io/name: nodepoolmanager
               app.kubernetes.io/managed-by: kustomize
-            name: agentpool-upgrade
+            name: system-pool-upgrade
           spec:
             subscriptionId: $SUB_ID
             resourceGroup: $RESOURCE_GROUP
             clusterName: $CLUSTER_NAME
             nodePools:
-              - name: agentpool
+              - name: system
                 properties: {
                   orchestratorVersion: $K8S_VERSION,
                 }
@@ -55,7 +55,7 @@ jobs:
 
       - name: Wait
         run: |
-          NODEPOOL_NAME=agentpool
+          NODEPOOL_NAME=system
           K8S_VERSION=${{ inputs.version }}
           
           while kubectl get nodes -o json | jq -r '.items[] | select(.metadata.labels["agentpool"]=="'"$NODEPOOL_NAME"'") | .status.nodeInfo.kubeletVersion' | grep -v "$K8S_VERSION"; do
@@ -65,5 +65,5 @@ jobs:
 
       - name: Cleanup
         run: |
-          kubectl -n operations delete nodepoolmanager.k8smanagers.greyridge.com/agentpool-upgrade
+          kubectl -n operations delete nodepoolmanager.k8smanagers.greyridge.com/system-pool-upgrade
 
