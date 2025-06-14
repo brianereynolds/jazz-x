@@ -27,7 +27,13 @@ See the description in each pipeline for relevant details
 6. Move Central deployment using WorkloadManager
 7. Delete unused node pools using NodepoolManager
 
-List available [here](https://github.com/brianereynolds/jazz-x/actions)
+Workflows available [here](https://github.com/brianereynolds/jazz-x/actions)
+
+To run this in GitHub Actions, you will need to have the following defined in your account
+* Secret -> KUBECONFIG: The contents of your $HOME/.kube/config used to connect to your AKS cluster
+* Variables -> SUB_ID: Azure Subscription ID that contains your AKS cluster
+* Variables -> RESOURCE_GROUP: The resource group name that contains your AKS cluster
+* Variables -> CLUSTER_NAME: The name of your AKS cluster
 
 ## Appendix
 
