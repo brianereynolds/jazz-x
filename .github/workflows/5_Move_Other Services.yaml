@@ -93,7 +93,7 @@ jobs:
   
             while [[ $(kubectl get deployment "$deployment-deployment" -n jazz-x -o json | jq '.status.readyReplicas') -ne $(kubectl get deployment "$deployment-deployment" -n jazz-x -o json | jq '.status.replicas') ]]; do
               echo "🔄 Deployment: $deployment - Waiting for pods... "
-              sleep 2
+              sleep 5
             done
           
             echo "✅ Deployment: $deployment - All pods are ready!"

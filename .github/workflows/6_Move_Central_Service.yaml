@@ -77,7 +77,7 @@ jobs:
           
           while [[ $(kubectl get deployment central-deployment -n jazz-x -o json | jq '.status.readyReplicas') -ne $(kubectl get deployment central-deployment -n jazz-x -o json | jq '.status.replicas') ]]; do
              echo "🔄 Waiting for deployment ..."
-             sleep 10
+             sleep 5
           done
 
           echo "✅ Deployment: central-deployment - Ready!"
