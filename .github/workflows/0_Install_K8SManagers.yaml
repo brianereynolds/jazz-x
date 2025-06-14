@@ -1,3 +1,8 @@
+# Description:
+#   This pipeline installs the K8S managers in the operations namespace
+# Parameters:
+#   Ignore Errors  true|false     When true, force the installation to continue even if errors occur
+
 name: 0. Install K8S Managers
 
 on:

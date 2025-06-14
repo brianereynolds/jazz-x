@@ -1,3 +1,11 @@
+# Description
+#   This pipeline can be used to delete unused pools. For example, new surge pools have been created and all workloads
+#   have been successfully moved to these pools. Thus the previous pools, which no longer have any workloads,
+#   can be deleted using this pipeline. The pools that are selected for deletion are the ones prefixed
+#   with cntrl (central) and svcs (services) and the chosen colour.
+# Parameters:
+#   Colour       blue|green    The colour of the node pool to DELETE
+
 name: 6. Delete Old Pools
 
 concurrency:

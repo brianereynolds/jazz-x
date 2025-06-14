@@ -1,3 +1,12 @@
+# Description
+#   This pipeline creates 2 surge pools to move workloads to, prefixed with cntrl (central) and svcs (services)
+#   Their names will have a colour postfix (blue or green). If the node pools already exist, they will be upgraded
+#   to the requested version.
+#   Each node pool will have a "MinNodes" value set to 1 to ensure that the pool is ready to
+#   accept workloads without waiting for scale up.
+# Parameters:
+#   Version      x.x.x         The version of Kubernetes to create/upgrade of the pools
+#   Colour       blue|green    The colour of the set of node pools to create
 name: 2. Create Surge Pools
 
 concurrency:

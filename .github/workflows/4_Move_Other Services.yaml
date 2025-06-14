@@ -1,3 +1,10 @@
+# Description
+#   This pipeline uses the nodeSelector method to move a list resources
+#   to the svcs (services) node pool of the selected colour. It sets a very small timeout (1 second)
+#   which effectively results in the services being moved in parallel
+# Parameters:
+#   Colour       blue|green    The colour of the node pool to move the configservice to.
+
 name: 4. Move Other Services
 
 concurrency:

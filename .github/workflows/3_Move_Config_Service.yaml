@@ -1,3 +1,9 @@
+# Description
+#   This pipeline uses the nodeSelector method to move a deployment resource named "configservice-deployment"
+#   to the svcs (services) node pool of the selected colour.
+# Parameters:
+#   Colour       blue|green    The colour of the node pool to move the configservice to.
+
 name: 3. Move Config Service
 
 concurrency:
@@ -73,6 +79,9 @@ jobs:
              echo "🔄 Waiting for deployment..."
              sleep 10
           done
+          
+          echo "✅ Deployment: configservice-deployment - Ready!"
+
 
       - name: Cleanup
         run: |

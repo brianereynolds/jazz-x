@@ -1,3 +1,7 @@
+# Description
+#   This pipeline will upgrade only the system nodepool. In this example, the pool has been named "agentpool"
+# Parameters:
+#   Target Kubernetes Version    x.x.x    The version of Kubernetes to upgrade this node pool to
 name: 1. Upgrade Agentpool Pool
 
 concurrency:
