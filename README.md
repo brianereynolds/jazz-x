@@ -52,8 +52,8 @@ Alternatively, to create manually, _set or change_ the "..." values
 ```
 SUB_ID="..."
 RESOURCE_GROUP="..."
-
 CLUSTER_NAME="..."
+
 K8S_VERSION="1.30.7"        # Change as required
 VM_SIZE="Standard_DS2_v2"   # Change as required
 
