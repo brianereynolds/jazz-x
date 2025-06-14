@@ -28,7 +28,7 @@ See the description in each pipeline for relevant details
 
 Workflows available [here](https://github.com/brianereynolds/jazz-x/actions)
 
-To run this in GitHub Actions, you will need to have the following defined in your account
+To run these in your own GitHub account, you will need to have the following defined:
 * Secret -> KUBECONFIG: The contents of your $HOME/.kube/config used to connect to your AKS cluster
 * Variables -> SUB_ID: Azure Subscription ID that contains your AKS cluster
 * Variables -> RESOURCE_GROUP: The resource group name that contains your AKS cluster
