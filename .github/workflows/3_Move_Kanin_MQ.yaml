@@ -75,12 +75,12 @@ jobs:
             sleep 2
           done
           
-          while [[ $(kubectl get statefulset kanin-mq-statefulset -n jazz-x -o json | jq '.status.readyReplicas') -ne $(kubectl get statefulset kanin-mq-statefulset -n jazz-x -o json | jq '.status.currentReplicas') ]]; do
-             echo "🔄 Waiting for statefulset..."
-             sleep 10
+          while [[ $(kubectl get statefulset kanin-mq-statefulset -n jazz-x -o json | jq '.status.readyReplicas // 0') -ne $(kubectl get statefulset kanin-mq-statefulset -n jazz-x -o json | jq '.status.currentReplicas // 0') ]]; do
+            echo "🔄 Waiting... Ready Replicas: $(kubectl get statefulset kanin-mq-statefulset -n jazz-x -o json | jq '.status.readyReplicas // 0'), Current Replicas: $(kubectl get statefulset kanin-mq-statefulset -n jazz-x -o json | jq '.status.currentReplicas // 0')"
+            sleep 10
           done
           
-          echo "✅ Deployment: kanin-mq-statefulset - Ready!"
+          echo "✅ Statefulset: kanin-mq-statefulset - Ready!"
 
 
       - name: Cleanup
