@@ -75,7 +75,7 @@ jobs:
             sleep 2
           done
           
-          while [[ $(kubectl get statefulset kanin-mq-statefulset -n jazz-x -o json | jq '.status.readyReplicas') -ne $(kubectl get deployment kanin-mq-statefulset -n jazz-x -o json | jq '.status.replicas') ]]; do
+          while [[ $(kubectl get statefulset kanin-mq-statefulset -n jazz-x -o json | jq '.status.readyReplicas') -ne $(kubectl get statefulset kanin-mq-statefulset -n jazz-x -o json | jq '.status.currentReplicas') ]]; do
              echo "🔄 Waiting for statefulset..."
              sleep 10
           done
