@@ -13,3 +13,7 @@ microservices:
   - name: wms
   - name: central
     agentpool: cntrlblue
+statefulsets:
+  kanin-mq:
+    name: kanin-mq
+    replicas: 3

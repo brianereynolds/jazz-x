@@ -5,7 +5,7 @@ A set of microservices for demonstration purposes that uses nodeSelector to sche
 
 ## Pre-reqs
 * A running AKS cluster
-* Nodepools named "cntrlblue" and "svcsblue". See appendix for creation
+* Nodepools named "cntrlblue" and "svcsblue". See appendix for creation instructions
 
 ## Installation
 ```
@@ -25,7 +25,9 @@ helm install nodepoolmanager k8smanagers/nodepoolmanager -n operations
 ```
 
 #### Create nodepools 
-_Set or change the values indicated_
+The following [pipeline can be used ](./.github/workflows/2_Create_Surge_Pools.yaml)
+
+Alternatively, to create manually, _set or change_ these values
 ```
 SUB_ID="..."
 RESOURCE_GROUP="..."

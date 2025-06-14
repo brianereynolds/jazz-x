@@ -6,7 +6,7 @@
 # Parameters:
 #   Colour       blue|green    The colour of the node pool to DELETE
 
-name: 6. Delete Old Pools
+name: 7. Delete Old Pools
 
 concurrency:
   group: np-maintenance-group

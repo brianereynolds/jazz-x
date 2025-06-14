@@ -1,10 +1,10 @@
 # Description
-#   This pipeline uses the nodeSelector method to move a deployment resource named "configservice-deployment"
+#   This pipeline uses the nodeSelector method to move a stateful resource named "kanin-mq-statefulset"
 #   to the svcs (services) node pool of the selected colour.
 # Parameters:
 #   Colour       blue|green    The colour of the node pool to move the configservice to.
 
-name: 3. Move Config Service
+name: 3. Move Kanin MQ Service
 
 concurrency:
   group: move-service-group
@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
     inputs:
       colour:
-        description: "Colour to move services TO"
+        description: "Colour to move the service TO"
         required: true
         type: choice
         options:
@@ -33,7 +33,7 @@ jobs:
           echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
           export KUBECONFIG=$HOME/.kube/config
 
-      - name: Move Configuration Service
+      - name: Move Kanin MQ Service
         run: |
           SUB_ID=${{ vars.SUB_ID }}
           RESOURCE_GROUP=${{ vars.RESOURCE_GROUP }}
@@ -48,16 +48,16 @@ jobs:
             labels:
               app.kubernetes.io/name: workloadmanager
               app.kubernetes.io/managed-by: kustomize
-            name: move-config-service
+            name: move-kaninmq-service
           spec:
             subscriptionId: $SUB_ID
             resourceGroup: $RESOURCE_GROUP
             clusterName: $CLUSTER_NAME
             procedures:
               - description: Move Configuration Service
-                type: deployment
+                type: statefulset
                 namespace: jazz-x
-                workloads: [configservice-deployment]
+                workloads: [kanin-mq-stateful]
                 selector: {
                   key: agentpool, 
                   initial: irrelevant, 
@@ -70,19 +70,19 @@ jobs:
         run: |
           NODEPOOL_NAME=svcs${{ inputs.colour }}
           
-          while ! kubectl get pods -l app=configservice -n jazz-x -o json | jq -r '.items[] | select(.spec.nodeSelector["agentpool"]=="'"$NODEPOOL_NAME"'") | .metadata.name' | grep .; do
-            echo "🔄 Waiting for configservice pod to be scheduled on node pool '$NODEPOOL_NAME'..."
+          while ! kubectl get pods -l app=kanin-mq -n jazz-x -o json | jq -r '.items[] | select(.spec.nodeSelector["agentpool"]=="'"$NODEPOOL_NAME"'") | .metadata.name' | grep .; do
+            echo "🔄 Waiting for kanin-mq pod to be scheduled on node pool '$NODEPOOL_NAME'..."
             sleep 2
           done
           
-          while [[ $(kubectl get deployment configservice-deployment -n jazz-x -o json | jq '.status.readyReplicas') -ne $(kubectl get deployment configservice-deployment -n jazz-x -o json | jq '.status.replicas') ]]; do
-             echo "🔄 Waiting for deployment..."
+          while [[ $(kubectl get statefulset kanin-mq-statefulset -n jazz-x -o json | jq '.status.readyReplicas') -ne $(kubectl get deployment kanin-mq-statefulset -n jazz-x -o json | jq '.status.replicas') ]]; do
+             echo "🔄 Waiting for statefulset..."
              sleep 10
           done
           
-          echo "✅ Deployment: configservice-deployment - Ready!"
+          echo "✅ Deployment: kanin-mq-statefulset - Ready!"
 
 
       - name: Cleanup
         run: |
-          kubectl -n operations delete workloadmanager.k8smanagers.greyridge.com/move-config-service
+          kubectl -n operations delete workloadmanager.k8smanagers.greyridge.com/move-kaninmq-service

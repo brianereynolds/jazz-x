@@ -1,0 +1,40 @@
+{{- range .Values.statefulsets }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .name }}-statefulset
+spec:
+  serviceName: {{ .name }}-service
+  replicas: {{ .replicas | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ .name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .name }}
+    spec:
+      nodeSelector:
+        agentpool: {{ .agentpool | default "svcsblue" }}
+      containers:
+        - name: {{ .name }}-container
+          image: busybox
+          args:
+            - sleep
+            - "3600"
+        - name: metrics-sidecar
+          image: prom/statsd-exporter
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .name }}-service
+spec:
+  selector:
+    app: {{ .name }}
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+{{- end }}

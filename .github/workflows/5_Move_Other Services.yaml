@@ -5,7 +5,7 @@
 # Parameters:
 #   Colour       blue|green    The colour of the node pool to move the configservice to.
 
-name: 4. Move Other Services
+name: 5. Move Other Services
 
 concurrency:
   group: move-service-group

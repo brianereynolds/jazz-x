@@ -1,0 +1,88 @@
+# Description
+#   This pipeline uses the nodeSelector method to move a deployment resource named "configservice-deployment"
+#   to the svcs (services) node pool of the selected colour.
+# Parameters:
+#   Colour       blue|green    The colour of the node pool to move the configservice to.
+
+name: 4. Move Config Service
+
+concurrency:
+  group: move-service-group
+
+on:
+  workflow_dispatch:
+    inputs:
+      colour:
+        description: "Colour to move services TO"
+        required: true
+        type: choice
+        options:
+          - blue
+          - green
+
+jobs:
+  do_move:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Kubernetes CLI
+        uses: azure/setup-kubectl@v3
+
+      - name: Configure Kubeconfig
+        run: |
+          mkdir -p $HOME/.kube/
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          export KUBECONFIG=$HOME/.kube/config
+
+      - name: Move Configuration Service
+        run: |
+          SUB_ID=${{ vars.SUB_ID }}
+          RESOURCE_GROUP=${{ vars.RESOURCE_GROUP }}
+          CLUSTER_NAME=${{ vars.CLUSTER_NAME }}
+          K8S_VERSION=${{ inputs.version }}
+          COLOUR=${{ inputs.colour }}
+        
+          cat <<EOF | kubectl apply -n operations -f -
+          apiVersion: k8smanagers.greyridge.com/v1
+          kind: WorkloadManager
+          metadata:
+            labels:
+              app.kubernetes.io/name: workloadmanager
+              app.kubernetes.io/managed-by: kustomize
+            name: move-config-service
+          spec:
+            subscriptionId: $SUB_ID
+            resourceGroup: $RESOURCE_GROUP
+            clusterName: $CLUSTER_NAME
+            procedures:
+              - description: Move Configuration Service
+                type: deployment
+                namespace: jazz-x
+                workloads: [configservice-deployment]
+                selector: {
+                  key: agentpool, 
+                  initial: irrelevant, 
+                  target: svcs$COLOUR
+                }
+                timeout: 300
+          EOF
+
+      - name: Wait for ready
+        run: |
+          NODEPOOL_NAME=svcs${{ inputs.colour }}
+          
+          while ! kubectl get pods -l app=configservice -n jazz-x -o json | jq -r '.items[] | select(.spec.nodeSelector["agentpool"]=="'"$NODEPOOL_NAME"'") | .metadata.name' | grep .; do
+            echo "🔄 Waiting for configservice pod to be scheduled on node pool '$NODEPOOL_NAME'..."
+            sleep 2
+          done
+          
+          while [[ $(kubectl get deployment configservice-deployment -n jazz-x -o json | jq '.status.readyReplicas') -ne $(kubectl get deployment configservice-deployment -n jazz-x -o json | jq '.status.replicas') ]]; do
+             echo "🔄 Waiting for deployment..."
+             sleep 10
+          done
+          
+          echo "✅ Deployment: configservice-deployment - Ready!"
+
+
+      - name: Cleanup
+        run: |
+          kubectl -n operations delete workloadmanager.k8smanagers.greyridge.com/move-config-service
