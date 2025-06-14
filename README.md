@@ -47,7 +47,7 @@ helm install nodepoolmanager k8smanagers/nodepoolmanager -n operations
 ```
 
 #### Create nodepools 
-The following [pipeline can be used ](./.github/workflows/2_Create_Surge_Pools.yaml)
+The following GitHub Actions [pipeline can be used ](./.github/workflows/2_Create_Surge_Pools.yaml)
 
 Alternatively, to create manually, _set or change_ these values
 ```
