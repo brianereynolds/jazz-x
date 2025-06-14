@@ -75,6 +75,10 @@ jobs:
             sleep 2
           done
           
+          sleep 5
+          
+          echo "🔄 Update... Ready Replicas: $(kubectl get statefulset kanin-mq-statefulset -n jazz-x -o json | jq '.status.readyReplicas // 0'), Current Replicas: $(kubectl get statefulset kanin-mq-statefulset -n jazz-x -o json | jq '.status.currentReplicas // 0')"
+
           while [[ $(kubectl get statefulset kanin-mq-statefulset -n jazz-x -o json | jq '.status.readyReplicas // 0') -ne $(kubectl get statefulset kanin-mq-statefulset -n jazz-x -o json | jq '.status.currentReplicas // 0') ]]; do
             echo "🔄 Waiting... Ready Replicas: $(kubectl get statefulset kanin-mq-statefulset -n jazz-x -o json | jq '.status.readyReplicas // 0'), Current Replicas: $(kubectl get statefulset kanin-mq-statefulset -n jazz-x -o json | jq '.status.currentReplicas // 0')"
             sleep 10
